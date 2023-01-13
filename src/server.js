@@ -1,4 +1,6 @@
 import express from "express";
+import WebSocket from "ws";
+import http from "http";
 
 const app = express();
 
@@ -11,4 +13,24 @@ app.get("/", (req, res) => res.render("home"));
 app.get("/*", (_, res) => res.redirect("/"));
 
 const handleListen = () => console.log(`Listening on http://localhost:3000`);
-app.listen(3000, handleListen);
+
+const server = http.createServer(app); //app.listen does not have access to the server but creating a server using http makes the user to have an access to server.
+
+/*
+ * Initializing websocket server in the same server as http connection.
+ * NOT required to put ({server}) if you don't want to establish http or ws on the same server.
+ */
+const wss = new WebSocket.Server({ server });
+
+wss.on("connection", (socket) => {
+    console.log("Connected to Browser ✅");
+    socket.on("close", () => {
+        console.log("Disonnected from the Browser ❌");
+    });
+    socket.on("message", (message) => {
+        console.log(message.toString());
+    });
+    socket.send("Hello!");
+});
+
+server.listen(3000, handleListen);
