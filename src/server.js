@@ -1,5 +1,5 @@
 import express from "express";
-import WebSocket from "ws";
+import SocketIO from "socket.io";
 import http from "http";
 
 const app = express();
@@ -14,37 +14,42 @@ app.get("/*", (_, res) => res.redirect("/"));
 
 const handleListen = () => console.log(`Listening on http://localhost:3000`);
 
-const server = http.createServer(app); //app.listen does not have access to the server but creating a server using http makes the user to have an access to server.
-
+const httpServer = http.createServer(app); //app.listen does not have access to the server but creating a server using http makes the user to have an access to server.
+const wsServer = SocketIO(httpServer);
 /*
  * Initializing websocket server in the same server as http connection.
  * NOT required to put ({server}) if you don't want to establish http or ws on the same server.
  */
-const wss = new WebSocket.Server({ server });
+//const wss = new WebSocket.Server({ server });
 
-const sockets = [];
+// const sockets = [];
 
-wss.on("connection", (socket) => {
-    sockets.push(socket);
-    socket["nickname"] = "Anonymous";
-    console.log("Connected to Browser ✅");
-    socket.on("close", () => {
-        console.log("Disonnected from the Browser ❌");
-    });
-    socket.on("message", (msg) => {
-        const message = JSON.parse(msg);
+// wss.on("connection", (socket) => {
+//     sockets.push(socket);
+//     socket["nickname"] = "Anonymous";
+//     console.log("Connected to Browser ✅");
+//     socket.on("close", () => {
+//         console.log("Disonnected from the Browser ❌");
+//     });
+//     socket.on("message", (msg) => {
+//         const message = JSON.parse(msg);
 
-        switch (message.type) {
-            case "new_message":
-                sockets.forEach((aSocket) =>
-                    aSocket.send(
-                        `${socket.nickname}: ${message.payload.toString()}`
-                    )
-                );
-            case "nickname":
-                socket["nickname"] = message.payload;
-        }
+//         switch (message.type) {
+//             case "new_message":
+//                 sockets.forEach((aSocket) =>
+//                     aSocket.send(
+//                         `${socket.nickname}: ${message.payload.toString()}`
+//                     )
+//                 );
+//             case "nickname":
+//                 socket["nickname"] = message.payload;
+//         }
+//     });
+// });
+wsServer.on("connection", (socket) => {
+    socket.on("enter_room", (roomName, done) => {
+        socket.join(roomName);
+        done();
     });
 });
-
-server.listen(3000, handleListen);
+httpServer.listen(3000, handleListen);
