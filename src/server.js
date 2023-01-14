@@ -22,15 +22,17 @@ const server = http.createServer(app); //app.listen does not have access to the 
  */
 const wss = new WebSocket.Server({ server });
 
+const sockets = [];
+
 wss.on("connection", (socket) => {
+    sockets.push(socket);
     console.log("Connected to Browser ✅");
     socket.on("close", () => {
         console.log("Disonnected from the Browser ❌");
     });
     socket.on("message", (message) => {
-        console.log(message.toString());
+        sockets.forEach((aSocket) => aSocket.send(message.toString()));
     });
-    socket.send("Hello!");
 });
 
 server.listen(3000, handleListen);
