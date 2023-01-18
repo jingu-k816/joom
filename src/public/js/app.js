@@ -1,5 +1,6 @@
 const socket = io();
 
+/* Chat feature
 const welcome = document.getElementById("welcome");
 const room = document.getElementById("room");
 
@@ -84,3 +85,4 @@ socket.on("room_change", (rooms) => {
         roomList.append(li);
     });
 });
+*/

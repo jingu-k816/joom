@@ -14,6 +14,9 @@ app.get("/", (req, res) => res.render("home"));
 app.get("/*", (_, res) => res.redirect("/"));
 
 const handleListen = () => console.log(`Listening on http://localhost:3000`);
+httpServer.listen(3000, handleListen);
+
+/* Chat feature
 
 const httpServer = http.createServer(app); //app.listen does not have access to the server but creating a server using http makes the user to have an access to server.
 const wsServer = new Server(httpServer, {
@@ -23,9 +26,11 @@ const wsServer = new Server(httpServer, {
     },
 });
 
-instrument(wsServer, {
+instrument(wsServer, { 
     auth: false,
 });
+
+*/
 /*
  * Initializing websocket server in the same server as http connection.
  * NOT required to put ({server}) if you don't want to establish http or ws on the same server.
@@ -34,6 +39,7 @@ instrument(wsServer, {
 
 // const sockets = [];
 
+/*
 // wss.on("connection", (socket) => {
 //     sockets.push(socket);
 //     socket["nickname"] = "Anonymous";
@@ -74,9 +80,10 @@ function publicRooms() {
     return publicRooms;
 }
 
-function countRooms(roomName) {
+function countRooms() {
     return wsServer.sockets.adapter.rooms.get(roomName)?.size;
 }
+
 wsServer.on("connection", (socket) => {
     socket["nickname"] = "Anonymous";
     socket.onAny((event) => {
@@ -109,4 +116,4 @@ wsServer.on("connection", (socket) => {
 
     socket.on("nickname", (nickname) => (socket["nickname"] = nickname));
 });
-httpServer.listen(3000, handleListen);
+*/
