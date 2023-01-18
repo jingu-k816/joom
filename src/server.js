@@ -12,13 +12,13 @@ app.use("/public", express.static(__dirname + "/public"));
 
 app.get("/", (req, res) => res.render("home"));
 app.get("/*", (_, res) => res.redirect("/"));
-
+const httpServer = http.createServer(app); //app.listen does not have access to the server but creating a server using http makes the user to have an access to server.
+const wsServer = new Server(httpServer);
 const handleListen = () => console.log(`Listening on http://localhost:3000`);
 httpServer.listen(3000, handleListen);
 
 /* Chat feature
 
-const httpServer = http.createServer(app); //app.listen does not have access to the server but creating a server using http makes the user to have an access to server.
 const wsServer = new Server(httpServer, {
     cors: {
         origin: ["https://admin.socket.io"],
