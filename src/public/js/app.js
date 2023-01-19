@@ -10,8 +10,8 @@ call.hidden = true;
 let myStream;
 let muted = false;
 let cameraOff = false;
-
 let roomName = "";
+let myPeerConnection;
 
 async function getCameras() {
     try {
@@ -116,9 +116,22 @@ welcomeForm.addEventListener("submit", handleWelcomeSubmit);
 
 // Socket Code
 
-socket.on("welcome", () => {
-    console.log("Someone joined");
+socket.on("welcome", async () => {
+    const offer = await myPeerConnection.createOffer();
+    myPeerConnection.setLocalDescription(offer);
+    socket.emit("offer", offer, roomName);
 });
+
+socket.on("offer", (offer) => {});
+
+//WebRTC Code
+
+function makeConnection() {
+    peerConnection = new RTCPeerConnection();
+    myStream
+        .getTracks()
+        .forEach((track) => myPeerConnection.addtrack(track, myStream));
+}
 /* Chat feature
 const welcome = document.getElementById("welcome");
 const room = document.getElementById("room");
