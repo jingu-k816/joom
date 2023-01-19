@@ -17,6 +17,13 @@ const wsServer = new Server(httpServer);
 const handleListen = () => console.log(`Listening on http://localhost:3000`);
 httpServer.listen(3000, handleListen);
 
+wsServer.on("connection", (socket) => {
+    socket.on("join_room", (roomName, callBack) => {
+        socket.join(roomName);
+        callBack();
+        socket.to(roomName).emit("welcome");
+    });
+});
 /* Chat feature
 
 const wsServer = new Server(httpServer, {
